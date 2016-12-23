@@ -8,6 +8,10 @@
 
 #import <Foundation/Foundation.h>
 
+#define MEETINGTYPE_STRING_GROUP        @"GROUP"
+#define MEETINGTYPE_STRING_WEBINAR      @"WEBINAR"
+#define MEETINGTYPE_STRING_BROADCAST    @"BROADCAST"
+
 @interface H2HLaunchParamsMeeeting : NSObject
 
 @property (nonatomic, copy)   NSString*         actualEndTime;
@@ -25,5 +29,8 @@
 @property (nonatomic, copy)   NSMutableArray*   whiteboards;
 @property (nonatomic, copy)   NSString*         origin;
 @property (nonatomic, copy)   NSString*         originMeetingID;
+@property (nonatomic, copy)   NSArray*          inviteesList;
+
+//@property (nonatomic, readonly, getter=getHLSVideoURL) NSString *hlsVideoURL;
 
 @end

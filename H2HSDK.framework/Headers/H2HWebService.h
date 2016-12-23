@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 #import "H2HWebServiceDelegate.h"
 #import "H2HErrorObject.h"
+#import "Reachability.h"
 
 @interface H2HWebService : NSObject
 /**

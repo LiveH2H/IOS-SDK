@@ -93,16 +93,68 @@ typedef int swift_int4  __attribute__((__ext_vector_type__(4)));
 #endif
 #if defined(__has_feature) && __has_feature(modules)
 @import UIKit;
-@import CoreGraphics;
-@import Foundation.NSURLSession;
-@import Foundation;
 @import ObjectiveC;
+@import Foundation.NSURLSession;
+@import CoreGraphics;
+@import Foundation;
 @import Dispatch;
 #endif
 
+#import <H2HSDK/H2HSDK.h>
+
 #pragma clang diagnostic ignored "-Wproperty-attribute-mismatch"
 #pragma clang diagnostic ignored "-Wduplicate-method-arg"
+@class NSBundle;
 @class NSCoder;
+
+SWIFT_CLASS("_TtC6H2HSDK27H2HCustomMenuViewController")
+@interface H2HCustomMenuViewController : UIViewController
+- (void)viewDidLoad;
+- (nonnull instancetype)initWithNibName:(NSString * _Nullable)nibNameOrNil bundle:(NSBundle * _Nullable)nibBundleOrNil OBJC_DESIGNATED_INITIALIZER;
+- (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)aDecoder OBJC_DESIGNATED_INITIALIZER;
+@end
+
+@class UIWebView;
+@class NSURLRequest;
+
+SWIFT_CLASS("_TtC6H2HSDK39H2HFabricJSWhiteboardItemViewController")
+@interface H2HFabricJSWhiteboardItemViewController : UIViewController <UIWebViewDelegate>
+- (void)viewDidLoad;
+- (void)viewDidAppear:(BOOL)animated;
+- (void)viewWillDisappear:(BOOL)animated;
+- (void)replaceContentViewWithViewController:(UIViewController * _Nonnull)vc;
+- (void)webViewDidFinishLoad:(UIWebView * _Nonnull)webView;
+- (BOOL)webView:(UIWebView * _Nonnull)webView shouldStartLoadWithRequest:(NSURLRequest * _Nonnull)request navigationType:(UIWebViewNavigationType)navigationType;
+- (nonnull instancetype)initWithNibName:(NSString * _Nullable)nibNameOrNil bundle:(NSBundle * _Nullable)nibBundleOrNil OBJC_DESIGNATED_INITIALIZER;
+- (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)aDecoder OBJC_DESIGNATED_INITIALIZER;
+@end
+
+
+SWIFT_CLASS("_TtC6H2HSDK33H2HFabricJSWhiteboardManagerModel")
+@interface H2HFabricJSWhiteboardManagerModel : NSObject <NSURLSessionDelegate>
++ (H2HFabricJSWhiteboardManagerModel * _Nonnull)sharedInstance;
+- (void)turnOffSocket;
+- (void)createWbManagerSocket;
+- (void)checkPolls;
+- (H2HFabricJSWhiteboardItemViewController * _Nonnull)createPollingLiveboard:(UIViewController * _Nonnull)vcPieChart withPollID:(NSString * _Nonnull)strPollId;
+- (H2HFabricJSWhiteboardItemViewController * _Nonnull)createPollingLiveboard:(UIViewController * _Nonnull)vcPieChart shouldSwitchToWhitebordTab:(BOOL)shouldSwitchToWhitebordTab withPollID:(NSString * _Nonnull)strPollId;
+- (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
+@end
+
+@class UIView;
+@class UIPresentationController;
+
+SWIFT_CLASS("_TtC6H2HSDK35H2HFabricJSWhiteboardViewController")
+@interface H2HFabricJSWhiteboardViewController : UIViewController <UIAdaptivePresentationControllerDelegate, UIPopoverPresentationControllerDelegate>
+@property (nonatomic) NSInteger currentStrokeWidth;
+- (void)viewDidLoad;
+- (void)viewDidAppear:(BOOL)animated;
+- (void)showWhiteboardSelectionView:(UIView * _Nonnull)sourceView;
+- (UIModalPresentationStyle)adaptivePresentationStyleForPresentationController:(UIPresentationController * _Nonnull)controller;
+- (nonnull instancetype)initWithNibName:(NSString * _Nullable)nibNameOrNil bundle:(NSBundle * _Nullable)nibBundleOrNil OBJC_DESIGNATED_INITIALIZER;
+- (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)aDecoder OBJC_DESIGNATED_INITIALIZER;
+@end
+
 
 SWIFT_CLASS("_TtC6H2HSDK17H2HLoadingSubview")
 @interface H2HLoadingSubview : UIView
@@ -121,6 +173,55 @@ SWIFT_CLASS("_TtC6H2HSDK19H2HMousePointerView")
 - (void)hideUserName;
 @end
 
+@class H2HChartOptionModel;
+@protocol PieChartToPollsManagerDelegate;
+
+SWIFT_CLASS("_TtC6H2HSDK25H2HPieChartViewController")
+@interface H2HPieChartViewController : UIViewController
+@property (nonatomic, copy) NSArray<H2HChartOptionModel *> * _Nullable arrayChartOptionModel;
+@property (nonatomic, copy) NSString * _Nullable stringChartTitle;
+@property (nonatomic, copy) NSString * _Nullable stringPollQuestion;
+@property (nonatomic) NSTimeInterval refreshPieChartAfterInterval;
+@property (nonatomic, strong) id <PieChartToPollsManagerDelegate> _Nullable delegate;
+- (void)viewDidLoad;
+- (void)refreshChartWithData:(NSArray<H2HChartOptionModel *> * _Nullable)arrayChartModel;
+- (nonnull instancetype)initWithNibName:(NSString * _Nullable)nibNameOrNil bundle:(NSBundle * _Nullable)nibBundleOrNil OBJC_DESIGNATED_INITIALIZER;
+- (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)aDecoder OBJC_DESIGNATED_INITIALIZER;
+@end
+
+
+SWIFT_PROTOCOL("_TtP6H2HSDK30PieChartToPollsManagerDelegate_")
+@protocol PieChartToPollsManagerDelegate
+- (void)refreshChart;
+@end
+
+@class NSDictionary;
+@class H2HWebService;
+@class H2HErrorObject;
+
+SWIFT_CLASS("_TtC6H2HSDK14H2HPollManager")
+@interface H2HPollManager : NSObject <H2HWebServiceDelegate, PieChartToPollsManagerDelegate, PollResultDelegate>
+- (void)alertForPollRequestWithJson:(NSDictionary * _Nonnull)json;
+- (void)pollResultReturnedWithModel:(NSArray * _Nonnull)chartOptionsModel;
+- (void)requestSucceed:(H2HWebService * _Null_unspecified)webService response:(id _Null_unspecified)responseModel;
+- (void)requestFailed:(H2HWebService * _Null_unspecified)webService error:(H2HErrorObject * _Null_unspecified)error;
+- (void)submitPollWithSelectedOptions:(NSArray * _Nonnull)optionsArray andRemainingTime:(NSTimeInterval)timeRemaining;
+- (void)loadPollSummary;
+- (void)refreshChart;
+- (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
+@end
+
+
+SWIFT_CLASS("_TtC6H2HSDK12H2HPollModel")
+@interface H2HPollModel : NSObject <H2HWebServiceDelegate>
++ (H2HPollModel * _Nonnull)sharedInstance;
+- (void)fetchPollList;
+- (void)requestSucceed:(H2HWebService * _Null_unspecified)webService response:(id _Null_unspecified)responseModel;
+- (void)requestFailed:(H2HWebService * _Null_unspecified)webService error:(H2HErrorObject * _Null_unspecified)error;
+- (void)displayPollingRequestWithJson:(NSDictionary * _Nonnull)json;
+- (void)handleCreatePoll:(id _Nonnull)data;
+@end
+
 
 SWIFT_CLASS("_TtC6H2HSDK14H2HRoundButton")
 @interface H2HRoundButton : UIButton
@@ -128,13 +229,40 @@ SWIFT_CLASS("_TtC6H2HSDK14H2HRoundButton")
 @property (nonatomic, getter=isHighlighted) BOOL highlighted;
 @end
 
+@class UserInfo;
+@class NSArray;
+@class NSDate;
+
+SWIFT_CLASS("_TtC6H2HSDK17H2HSDKHttpRequest")
+@interface H2HSDKHttpRequest : NSObject
++ (H2HSDKHttpRequest * _Nonnull)sharedInstance;
+- (void)signUpH2HUser:(NSString * _Nonnull)userName firstName:(NSString * _Nonnull)firstName lastName:(NSString * _Nonnull)lastName email:(NSString * _Nonnull)email password:(NSString * _Nonnull)password locale:(NSString * _Nonnull)locale success:(void (^ _Nonnull)(NSString * _Nonnull))success failure:(void (^ _Nonnull)(NSString * _Nonnull))failure;
+- (void)loginWith:(NSString * _Nonnull)email password:(NSString * _Nonnull)password success:(void (^ _Nonnull)(UserInfo * _Nonnull))success failure:(void (^ _Nonnull)(NSString * _Nonnull))failure;
+- (void)startMeetingWith:(NSString * _Nonnull)description isGroupMeeting:(BOOL)isGroupMeeting shouldRecordMeeting:(BOOL)shouldRecordMeeting subject:(NSString * _Nonnull)subject attendeesEmailList:(NSArray * _Nonnull)attendeesEmailList translatorList:(NSArray * _Nonnull)translatorList success:(void (^ _Nonnull)(NSString * _Nonnull, NSString * _Nonnull, NSString * _Nonnull, NSString * _Nonnull))success failure:(void (^ _Nonnull)(NSString * _Nonnull))failure;
+- (void)startInstantMeetingWith:(NSString * _Nonnull)displayName email:(NSString * _Nullable)email locale:(NSString * _Nonnull)locale success:(void (^ _Nonnull)(NSString * _Nonnull, NSString * _Nonnull, NSString * _Nonnull, NSString * _Nonnull))success failure:(void (^ _Nonnull)(NSString * _Nonnull))failure;
+- (void)joinMeetingWithEmail:(NSString * _Nonnull)meetingId email:(NSString * _Nonnull)email success:(void (^ _Nonnull)(NSString * _Nonnull, NSString * _Nonnull, NSString * _Nonnull, NSString * _Nonnull))success failure:(void (^ _Nonnull)(NSString * _Nonnull))failure;
+- (void)joinMeetingByMeetingID:(NSString * _Nonnull)meetingId success:(void (^ _Nonnull)(NSString * _Nonnull, NSString * _Nonnull, NSString * _Nonnull, NSString * _Nonnull))success failure:(void (^ _Nonnull)(NSString * _Nonnull))failure;
+- (void)scheduleMeetingWith:(NSString * _Nonnull)description isGroupMeeting:(BOOL)isGroupMeeting shouldRecordMeeting:(BOOL)shouldRecordMeeting subject:(NSString * _Nonnull)subject attendeesEmailList:(NSArray * _Nonnull)attendeesEmailList translatorList:(NSArray * _Nonnull)translatorList startDateTime:(NSDate * _Nonnull)startDateTime endDateTime:(NSDate * _Nonnull)endDateTime success:(void (^ _Nonnull)(NSString * _Nonnull))success failure:(void (^ _Nonnull)(NSString * _Nonnull))failure;
+- (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
+@end
+
+
+SWIFT_CLASS("_TtC6H2HSDK27H2HVBPieChartViewController")
+@interface H2HVBPieChartViewController : UIViewController
+@property (nonatomic, copy) NSArray<H2HChartOptionModel *> * _Nullable arrayChartOptionModel;
+@property (nonatomic, copy) NSString * _Nullable stringChartTitle;
+@property (nonatomic, strong) id <PieChartToPollsManagerDelegate> _Nullable delegate;
+- (void)viewDidLoad;
+- (void)refreshChartWithData:(NSArray<H2HChartOptionModel *> * _Nullable)arrayChartModel;
+- (nonnull instancetype)initWithNibName:(NSString * _Nullable)nibNameOrNil bundle:(NSBundle * _Nullable)nibBundleOrNil OBJC_DESIGNATED_INITIALIZER;
+- (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)aDecoder OBJC_DESIGNATED_INITIALIZER;
+@end
+
 @class NSURLSession;
 @class NSURLAuthenticationChallenge;
 @class NSURLCredential;
-@class UIPresentationController;
 @class UITouch;
 @class UIEvent;
-@class NSBundle;
 
 SWIFT_CLASS("_TtC6H2HSDK27H2HWhiteBoardViewController")
 @interface H2HWhiteBoardViewController : UIViewController <NSURLSessionDelegate, UIAdaptivePresentationControllerDelegate, UIPopoverPresentationControllerDelegate>
@@ -166,19 +294,21 @@ SWIFT_CLASS("_TtC6H2HSDK20H2HWhiteboardManager")
 - (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
 @end
 
-@class UIStoryboardSegue;
 
 SWIFT_CLASS("_TtC6H2HSDK34H2HWhiteboardManagerViewController")
 @interface H2HWhiteboardManagerViewController : UIViewController <NSURLSessionDelegate, UIAdaptivePresentationControllerDelegate, UIPopoverPresentationControllerDelegate>
 - (void)viewDidLoad;
 - (UIModalPresentationStyle)adaptivePresentationStyleForPresentationController:(UIPresentationController * _Nonnull)controller;
 - (void)didReceiveMemoryWarning;
-- (void)viewWillDisappear:(BOOL)animated;
-- (void)prepareForSegue:(UIStoryboardSegue * _Nonnull)segue sender:(id _Null_unspecified)sender;
+- (void)disconnect;
 - (void)touchesBegan:(NSSet<UITouch *> * _Nonnull)touches withEvent:(UIEvent * _Nullable)event;
 - (void)touchesEnded:(NSSet<UITouch *> * _Nonnull)touches withEvent:(UIEvent * _Nullable)event;
 - (void)touchesMoved:(NSSet<UITouch *> * _Nonnull)touches withEvent:(UIEvent * _Nullable)event;
 - (void)URLSession:(NSURLSession * _Nonnull)session didReceiveChallenge:(NSURLAuthenticationChallenge * _Nonnull)challenge completionHandler:(void (^ _Nonnull)(NSURLSessionAuthChallengeDisposition, NSURLCredential * _Nullable))completionHandler;
+- (void)hidePageSwitchView;
+- (void)showPageSwitchView;
+- (void)keyboardDidShowWithHeight:(CGFloat)keyboardHeight;
+- (void)keyboardWillHide;
 - (nonnull instancetype)initWithNibName:(NSString * _Nullable)nibNameOrNil bundle:(NSBundle * _Nullable)nibBundleOrNil OBJC_DESIGNATED_INITIALIZER;
 - (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)aDecoder OBJC_DESIGNATED_INITIALIZER;
 @end
@@ -188,12 +318,12 @@ SWIFT_CLASS("_TtC6H2HSDK34H2HWhiteboardManagerViewController")
 @end
 
 
+
 SWIFT_CLASS("_TtC6H2HSDK16SocketAckEmitter")
 @interface SocketAckEmitter : NSObject
 - (void)with:(NSArray * _Nonnull)items;
 @end
 
-@class NSArray;
 
 SWIFT_CLASS("_TtC6H2HSDK14SocketAnyEvent")
 @interface SocketAnyEvent : NSObject
@@ -405,6 +535,33 @@ typedef SWIFT_ENUM(NSInteger, SocketIOClientStatus) {
 
 
 @interface UIColor (SWIFT_EXTENSION(H2HSDK))
+@end
+
+@class NSNumber;
+
+SWIFT_CLASS("_TtC6H2HSDK8UserInfo")
+@interface UserInfo : NSObject
+@property (nonatomic, strong) NSNumber * _Nonnull recordingDefault;
+@property (nonatomic, strong) NSNumber * _Nonnull isCtAdmin;
+@property (nonatomic, strong) NSNumber * _Nonnull isAdmin;
+@property (nonatomic, copy) NSString * _Nonnull apiToken;
+@property (nonatomic, strong) NSNumber * _Nonnull uploadLimit;
+@property (nonatomic, copy) NSString * _Nonnull screenName;
+@property (nonatomic, strong) NSNumber * _Nonnull attendeesLimit;
+@property (nonatomic, copy) NSString * _Nonnull countryCode;
+@property (nonatomic, strong) NSNumber * _Nonnull accountType;
+@property (nonatomic, copy) NSString * _Nonnull avatar;
+@property (nonatomic, strong) NSNumber * _Nonnull returnCode;
+@property (nonatomic, strong) NSNumber * _Nonnull logo;
+@property (nonatomic, copy) NSString * _Nonnull timeZone;
+@property (nonatomic, copy) NSString * _Nonnull token;
+@property (nonatomic, strong) NSNumber * _Nonnull userId;
+@property (nonatomic, strong) NSNumber * _Nonnull accountSn;
+@property (nonatomic, copy) NSString * _Nonnull email;
+@property (nonatomic, copy) NSString * _Nonnull name;
+@property (nonatomic, strong) NSNumber * _Nonnull isSystemChecked;
+@property (nonatomic, copy) NSString * _Nonnull phone;
+- (nonnull instancetype)initWithRecordingDefault:(NSNumber * _Nonnull)recordingDefault isCtAdmin:(NSNumber * _Nonnull)isCtAdmin isAdmin:(NSNumber * _Nonnull)isAdmin apiToken:(NSString * _Nonnull)apiToken uploadLimit:(NSNumber * _Nonnull)uploadLimit screenName:(NSString * _Nonnull)screenName attendeesLimit:(NSNumber * _Nonnull)attendeesLimit countryCode:(NSString * _Nonnull)countryCode accountType:(NSNumber * _Nonnull)accountType avatar:(NSString * _Nonnull)avatar returnCode:(NSNumber * _Nonnull)returnCode logo:(NSNumber * _Nonnull)logo timeZone:(NSString * _Nonnull)timeZone token:(NSString * _Nonnull)token userId:(NSNumber * _Nonnull)userId accountSn:(NSNumber * _Nonnull)accountSn email:(NSString * _Nonnull)email name:(NSString * _Nonnull)name isSystemChecked:(NSNumber * _Nonnull)isSystemChecked phone:(NSString * _Nonnull)phone OBJC_DESIGNATED_INITIALIZER;
 @end
 
 @class NSStream;
